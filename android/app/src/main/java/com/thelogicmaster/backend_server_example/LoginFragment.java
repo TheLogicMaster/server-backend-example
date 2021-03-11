@@ -11,42 +11,81 @@ import androidx.navigation.Navigation;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.ServerError;
+import com.android.volley.toolbox.Volley;
 
 public class LoginFragment extends Fragment {
 
+    private RequestQueue queue;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        final EditText usernameEdit = view.findViewById(R.id.username);
+        final EditText passwordEdit = view.findViewById(R.id.password);
+
+        queue = Volley.newRequestQueue(requireContext());
+
+        view.findViewById(R.id.login).setOnClickListener(v -> {
+            queue.add(new AuthStringRequest(Request.Method.GET, Helpers.BASE_URL + "login",
+                    response -> {
+                        Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+                        login(view, usernameEdit.getText().toString(), passwordEdit.getText().toString());
+                    },
+                    error -> {
+                        if (error.networkResponse.statusCode == 401) {
+                            Toast.makeText(getContext(), "Incorrect credentials (Hint: try \"user:1234\")", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Log.e("loginRequest1", "Failed to login", error);
+                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                    }, Helpers.getAuth(usernameEdit.getText().toString(), passwordEdit.getText().toString())));
+        });
+
+        view.findViewById(R.id.signup).setOnClickListener(v -> {
+            queue.add(new AuthStringRequest(Request.Method.GET, Helpers.BASE_URL +
+                    "signup?username=" + usernameEdit.getText() + "&password=" + passwordEdit.getText(),
+                    response -> {
+                        if (!"Successfully created account!".equals(response)) {
+                            Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        login(view, usernameEdit.getText().toString(), passwordEdit.getText().toString());
+                    },
+                    error -> {
+                        Log.e("loginRequest1", "Failed to signup", error);
+                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                    }, Helpers.getAuth(requireActivity())));
+        });
+
+        return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final EditText usernameEditText = view.findViewById(R.id.username);
-        final EditText passwordEditText = view.findViewById(R.id.password);
-        final Button loginButton = view.findViewById(R.id.login);
-        final Button signupButton = view.findViewById(R.id.signup);
-
-        signupButton.setOnClickListener(v -> {
-            login(view, "user");
-        });
-
-        loginButton.setOnClickListener(v -> {
-            login(view, "user");
-        });
+    public void onPause() {
+        super.onPause();
+        queue.stop();
     }
 
-    private void login(View view, String username) {
-        SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
-        editor.putString("username", username);
-        editor.apply();
+    @Override
+    public void onResume() {
+        super.onResume();
+        queue.start();
+    }
+
+    private void login(View view, String username, String password) {
+        Helpers.setCredentials(requireActivity(), username, password);
         Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
     }
 }

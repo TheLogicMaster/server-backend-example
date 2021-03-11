@@ -14,10 +14,15 @@ import java.util.List;
  */
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Message> mValues;
+    private List<Message> messages;
 
-    public MessageRecyclerViewAdapter(List<Message> items) {
-        mValues = items;
+    public MessageRecyclerViewAdapter(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -29,14 +34,14 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.message = mValues.get(position);
-        holder.usernameView.setText(mValues.get(position).user);
-        holder.messageView.setText(mValues.get(position).message);
+        holder.message = messages.get(position);
+        holder.usernameView.setText(messages.get(position).user);
+        holder.messageView.setText(messages.get(position).message);
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return messages.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -48,8 +53,8 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         public ViewHolder(View view) {
             super(view);
             this.view = view;
-            this.usernameView = (TextView) view.findViewById(R.id.username);
-            this.messageView = (TextView) view.findViewById(R.id.message);
+            this.usernameView = view.findViewById(R.id.username);
+            this.messageView = view.findViewById(R.id.message);
         }
 
         @Override

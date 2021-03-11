@@ -19,36 +19,34 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 public class HomeFragment extends Fragment {
 
     private TextView helloText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         helloText = view.findViewById(R.id.hello);
 
-        ((Button) view.findViewById(R.id.chatButton)).setOnClickListener(
+        view.findViewById(R.id.chatButton).setOnClickListener(
                 Navigation.createNavigateOnClickListener(R.id.action_homeFragment_to_messagesFragment, null));
-        ((Button) view.findViewById(R.id.logoutButton)).setOnClickListener(v -> {
-            SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
-            editor.putString("username", null);
-            editor.apply();
+
+        view.findViewById(R.id.logoutButton).setOnClickListener(v -> {
+            Helpers.setCredentials(requireActivity(), null, null);
             Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
         });
+
+        return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        String username = getActivity().getPreferences(Context.MODE_PRIVATE).getString("username", null);
+        String username = Helpers.getUsername(requireActivity());
         if (username == null)
             NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_loginFragment);
         else

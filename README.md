@@ -8,7 +8,10 @@ A hybrid approach was taken to web security for the app's backend server.
 ### Password Storage
 
 Proper hashing and salting of passwords is done, but we also log all user
-passwords. You have to take what you can get.
+passwords. You have to take what you can get. 
+
+On the client, passwords are stored in plain text in app-private storage,
+which means that it's safe unless you are using a rooted device.
 
 ### Authentication 
 
@@ -24,3 +27,5 @@ are indexed by username, as is surely industry standard. Secondly, user submitte
 passwords are hashed and compared to existing password hashes to ensure that no other
 user is using said password, helpfully informing the user of the username that already
 is using that password.
+
+Since the best password is no password, empty passwords are allowed and encouraged.
