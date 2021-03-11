@@ -42,8 +42,8 @@ def verify_password(username, password):
 
 @app.route('/signup')
 def signup():
-    password = request.args.get('password')
-    username = request.args.get('username')
+    password = request.args.get('password', default='')
+    username = request.args.get('username', default='')
     if username in data['users']:
         return 'Sorry, that username is already taken'
     for user in data['users']:
