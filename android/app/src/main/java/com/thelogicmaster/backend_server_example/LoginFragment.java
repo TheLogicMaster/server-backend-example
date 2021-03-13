@@ -44,7 +44,7 @@ public class LoginFragment extends Fragment {
                         login(view, usernameEdit.getText().toString(), passwordEdit.getText().toString());
                     },
                     error -> {
-                        if (error.networkResponse.statusCode == 401) {
+                        if (error.networkResponse != null && error.networkResponse.statusCode == 401) {
                             Toast.makeText(getContext(), "Incorrect credentials (Hint: try \"user:1234\")", Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -57,11 +57,9 @@ public class LoginFragment extends Fragment {
             queue.add(new AuthStringRequest(Request.Method.GET, Helpers.BASE_URL +
                     "signup?username=" + usernameEdit.getText() + "&password=" + passwordEdit.getText(),
                     response -> {
-                        if (!"Successfully created account!".equals(response)) {
-                            Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        login(view, usernameEdit.getText().toString(), passwordEdit.getText().toString());
+                        Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+                        if ("Successfully created account!".equals(response))
+                            login(view, usernameEdit.getText().toString(), passwordEdit.getText().toString());
                     },
                     error -> {
                         Log.e("loginRequest1", "Failed to signup", error);

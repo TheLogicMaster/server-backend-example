@@ -21,7 +21,6 @@ public class AuthJsonRequest extends JsonObjectRequest {
         this.auth = auth;
     }
 
-
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         HashMap<String, String> headers = new HashMap<>();

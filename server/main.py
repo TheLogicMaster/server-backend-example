@@ -4,7 +4,7 @@ from os import path
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='')
 auth = HTTPBasicAuth()
 
 data = {
@@ -38,6 +38,11 @@ def verify_password(username, password):
     if username in data['users'] and \
             check_password_hash(data['users'][username], password):
         return username
+
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 
 @app.route('/signup')
