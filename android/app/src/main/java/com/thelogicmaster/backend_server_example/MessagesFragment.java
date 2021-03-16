@@ -28,6 +28,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MessagesFragment extends Fragment {
 
@@ -36,6 +38,7 @@ public class MessagesFragment extends Fragment {
     private RecyclerView recyclerView;
     private MessageRecyclerViewAdapter recyclerAdapter;
     private EditText messageEdit;
+    private Timer timer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,20 +79,30 @@ public class MessagesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerAdapter = new MessageRecyclerViewAdapter(Collections.emptyList());
         recyclerView.setAdapter(recyclerAdapter);
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        refresh();
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                refresh();
+            }
+        }, 0, 1000);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         queue.stop();
         swipeRefresh.setRefreshing(false);
+        timer.cancel();
     }
 
     private void sendMessage() {
@@ -101,7 +114,7 @@ public class MessagesFragment extends Fragment {
                 },
                 error -> {
                     Toast.makeText(getContext(), "Failed to send message", Toast.LENGTH_LONG).show();
-                    Log.e("postRequest", "Failed to post message", error)
+                    Log.e("Post", "Failed to post message", error)
                     ;}, Helpers.getAuth(requireActivity())) {
             @Override
             public byte[] getBody() {

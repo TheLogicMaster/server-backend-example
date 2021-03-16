@@ -38,7 +38,7 @@ public class LoginFragment extends Fragment {
                             Toast.makeText(getContext(), "Incorrect credentials (Hint: try \"user:1234\")", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        Log.e("loginRequest1", "Failed to login", error);
+                        Log.e("Login", "Failed to login", error);
                         Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
                     }, Helpers.getAuth(usernameEdit.getText().toString(), passwordEdit.getText().toString())));
         });
@@ -52,7 +52,7 @@ public class LoginFragment extends Fragment {
                             login(view, usernameEdit.getText().toString(), passwordEdit.getText().toString());
                     },
                     error -> {
-                        Log.e("loginRequest1", "Failed to signup", error);
+                        Log.e("Signup", "Failed to signup", error);
                         Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
                     }, Helpers.getAuth(requireActivity())));
         });
