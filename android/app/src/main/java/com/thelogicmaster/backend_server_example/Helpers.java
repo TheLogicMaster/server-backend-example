@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import androidx.annotation.Nullable;
-
 public class Helpers {
 
     public static final String BASE_URL = "https://example.thelogicmaster.com/";
